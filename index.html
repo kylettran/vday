@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Will you be my Valentine?</title>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
 <style>
 :root {
   --bg1:#ffd6e7;
@@ -46,14 +44,6 @@ body.dark {
   to { transform:scale(1.1); }
 }
 
-/* CONFETTI */
-#confettiCanvas {
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:9998;
-}
-
 /* HEART TRAIL */
 .heart {
   position:fixed;
@@ -66,6 +56,20 @@ body.dark {
 @keyframes floatUp {
   0% { transform:translate(-50%,-50%) scale(1); opacity:1; }
   100% { transform:translate(-50%,-80%) scale(1.6); opacity:0; }
+}
+
+/* KISS FLOOD */
+.kiss {
+  position:fixed;
+  font-size:40px;
+  pointer-events:none;
+  animation:kissFall 1s ease-out forwards;
+  z-index:9998;
+}
+
+@keyframes kissFall {
+  0% { transform:translateY(-50px) scale(0.8); opacity:1; }
+  100% { transform:translateY(100vh) scale(1.2); opacity:0; }
 }
 
 /* CARD */
@@ -94,7 +98,6 @@ body.dark {
   50%{transform:translateY(-8px);}
 }
 
-/* BLINK */
 .blink {
   transform-origin:center;
   animation:blinkAnim 4s infinite;
@@ -105,7 +108,6 @@ body.dark {
   95%{transform:scaleY(0.1);}
 }
 
-/* BLUSH */
 .blush {
   opacity:0;
   transition:opacity .3s ease;
@@ -171,13 +173,6 @@ button {
 
 <body>
 
-<canvas id="confettiCanvas"></canvas>
-
-<!-- SOFT BACKGROUND MUSIC -->
-<audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3d57d46fd8.mp3?filename=romantic-piano-110623.mp3" type="audio/mpeg">
-</audio>
-
 <main class="card" id="card">
 
 <svg class="art" viewBox="0 0 320 260">
@@ -215,6 +210,7 @@ button {
 </main>
 
 <script>
+
 /* HEART TRAIL */
 document.addEventListener("mousemove", e=>{
   const heart=document.createElement("div");
@@ -226,16 +222,19 @@ document.addEventListener("mousemove", e=>{
   setTimeout(()=>heart.remove(),800);
 });
 
-/* CONFETTI */
-const canvas=document.getElementById("confettiCanvas");
-const confettiInstance=confetti.create(canvas,{resize:true,useWorker:true});
-function fullScreenConfetti(){
-  confettiInstance({
-    particleCount:300,
-    spread:140,
-    startVelocity:60,
-    origin:{x:0.5,y:0.55}
-  });
+/* KISS FLOOD */
+function kissFlood() {
+  for (let i = 0; i < 120; i++) {
+    const kiss = document.createElement("div");
+    kiss.className = "kiss";
+    kiss.textContent = Math.random() > 0.5 ? "💋" : "😘";
+    kiss.style.left = Math.random() * 100 + "vw";
+    kiss.style.top = "-50px";
+    kiss.style.fontSize = (30 + Math.random()*40) + "px";
+    kiss.style.animationDuration = (0.8 + Math.random()*0.6) + "s";
+    document.body.appendChild(kiss);
+    setTimeout(()=>kiss.remove(),1000);
+  }
 }
 
 /* BUTTON LOGIC */
@@ -244,7 +243,6 @@ const yesBtn=document.getElementById("yesBtn");
 const noBtn=document.getElementById("noBtn");
 const result=document.getElementById("result");
 const card=document.getElementById("card");
-const bgMusic=document.getElementById("bgMusic");
 
 let yesScale=1;
 function growYes(){
@@ -286,13 +284,12 @@ yesBtn.addEventListener("click",()=>{
   document.body.classList.add("dark");
   card.classList.add("zoom");
 
-  fullScreenConfetti();
-  bgMusic.volume=0.4;
-  bgMusic.play();
+  kissFlood();
 
-  result.style.display="block";
+  setTimeout(()=>{
+    result.style.display="block";
 
-  const message =
+    const message =
 `Valentine's Day plan:
 
 Dress: Sexy, but appropriate for dinner
@@ -303,16 +300,16 @@ Location: I am going to blindfold you so that you have no idea
 
 I can't wait for this day to come 😉`;
 
-  let i=0;
-  function typeWriter(){
-    if(i<message.length){
-      result.textContent+=message.charAt(i);
-      i++;
-      setTimeout(typeWriter,40);
+    let i=0;
+    function typeWriter(){
+      if(i<message.length){
+        result.textContent+=message.charAt(i);
+        i++;
+        setTimeout(typeWriter,40);
+      }
     }
-  }
-
-  setTimeout(typeWriter,800);
+    typeWriter();
+  },1000);
 });
 </script>
 
