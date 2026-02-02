@@ -5,14 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Will you be my Valentine?</title>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
 <style>
 :root {
-  --bg1:#ffd6e7;
-  --bg2:#ffeef6;
-  --darkFade:#2b0d1f;
-  --card:#ffffffcc;
+  --bg1:#f3d6df;
+  --bg2:#e9c9d3;
+  --card:#f2eeee;
   --yes:#ff3b7a;
   --yesHover:#ff1f68;
 }
@@ -24,77 +21,32 @@ body {
   min-height:100vh;
   display:grid;
   place-items:center;
-  background:radial-gradient(circle at top,var(--bg2),var(--bg1));
+  background:linear-gradient(to bottom,var(--bg1),var(--bg2));
   font-family:system-ui,sans-serif;
-  overflow:hidden;
-  cursor:none;
-  transition:background 2s ease;
-}
-
-/* DARK FADE */
-body.dark {
-  background:radial-gradient(circle at center,#4b1433,var(--darkFade));
-}
-
-/* ZOOM EFFECT */
-.zoom {
-  animation:slowZoom 6s ease forwards;
-}
-
-@keyframes slowZoom {
-  from { transform:scale(1); }
-  to { transform:scale(1.1); }
-}
-
-/* CONFETTI */
-#confettiCanvas {
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:9998;
-}
-
-/* HEART TRAIL */
-.heart {
-  position:fixed;
-  pointer-events:none;
-  font-size:18px;
-  animation:floatUp .8s ease-out forwards;
-  z-index:9999;
-}
-
-@keyframes floatUp {
-  0% { transform:translate(-50%,-50%) scale(1); opacity:1; }
-  100% { transform:translate(-50%,-80%) scale(1.6); opacity:0; }
 }
 
 /* CARD */
 .card {
-  width:min(720px,92vw);
-  padding:30px;
+  width:min(720px,90vw);
+  padding:40px 30px;
   background:var(--card);
-  backdrop-filter:blur(14px);
-  border-radius:26px;
+  border-radius:28px;
   text-align:center;
-  box-shadow:0 20px 70px rgba(0,0,0,.2);
-  transition:transform 6s ease;
+  box-shadow:0 30px 80px rgba(0,0,0,.08);
 }
 
-.art {
-  width:240px;
-  margin:auto;
-  animation:bounce 3s ease-in-out infinite;
+/* CAT */
+.cat {
+  width:160px;
+  margin:0 auto 10px;
+  display:block;
   transition:transform .3s ease;
 }
 
-.art:hover { transform:scale(1.05); }
-
-@keyframes bounce {
-  0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-8px);}
+.cat:hover {
+  transform:scale(1.05);
 }
 
-/* BLINK */
 .blink {
   transform-origin:center;
   animation:blinkAnim 4s infinite;
@@ -110,17 +62,27 @@ body.dark {
   opacity:0;
   transition:opacity .3s ease;
 }
-.art:hover .blush { opacity:.8; }
 
+.cat:hover .blush {
+  opacity:.8;
+}
+
+/* TEXT */
 h1 {
   font-size:32px;
-  margin:20px 0;
+  margin:18px 0;
+}
+
+.hoverHint {
+  font-size:14px;
+  opacity:.7;
+  margin-bottom:18px;
 }
 
 .button-zone {
   position:relative;
-  width:420px;
-  height:140px;
+  width:300px;
+  height:120px;
   margin:auto;
 }
 
@@ -128,145 +90,117 @@ button {
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-  padding:16px 26px;
+  padding:16px 28px;
   font-size:18px;
   font-weight:800;
   border-radius:999px;
   border:none;
   cursor:pointer;
-  box-shadow:0 10px 25px rgba(0,0,0,.15);
+  box-shadow:0 10px 25px rgba(0,0,0,.1);
 }
 
 #yesBtn {
-  left:18%;
+  left:40%;
   background:var(--yes);
   color:white;
 }
+
 #yesBtn:hover { background:var(--yesHover); }
 
 #noBtn {
-  left:62%;
-  background:#e5e7eb;
+  left:10%;
+  background:#d1d5db;
 }
 
+/* SHY HINT */
+.shyHint {
+  margin-top:14px;
+  font-size:14px;
+  opacity:.6;
+}
+
+/* RESULT */
 .result {
   display:none;
-  margin-top:25px;
+  margin-top:20px;
   font-size:20px;
   white-space:pre-line;
-  min-height:140px;
-}
-
-.cursorBlink::after {
-  content:"|";
-  animation:blinkCursor 1s infinite;
-}
-
-@keyframes blinkCursor {
-  0%,50%,100%{opacity:1;}
-  25%,75%{opacity:0;}
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="confettiCanvas"></canvas>
+<main class="card">
 
-<!-- SOFT BACKGROUND MUSIC -->
-<audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3d57d46fd8.mp3?filename=romantic-piano-110623.mp3" type="audio/mpeg">
-</audio>
-
-<main class="card" id="card">
-
-<svg class="art" viewBox="0 0 320 260">
-  <defs>
-    <linearGradient id="catFur" x1="0" x2="1">
-      <stop offset="0" stop-color="#ffd4b8"/>
-      <stop offset="1" stop-color="#ffb38a"/>
-    </linearGradient>
-  </defs>
-
-  <circle cx="160" cy="140" r="75" fill="url(#catFur)" />
-  <path d="M95 95 L120 50 L150 100 Z" fill="#ffb38a"/>
-  <path d="M225 95 L200 50 L170 100 Z" fill="#ffb38a"/>
+<!-- CUTE CAT SVG -->
+<svg class="cat" viewBox="0 0 200 200">
+  <circle cx="100" cy="110" r="60" fill="#ffccaa"/>
+  <polygon points="60,60 85,30 100,70" fill="#ffbb99"/>
+  <polygon points="140,60 115,30 100,70" fill="#ffbb99"/>
 
   <g class="blink">
-    <circle cx="135" cy="140" r="8"/>
-    <circle cx="185" cy="140" r="8"/>
+    <circle cx="80" cy="110" r="6"/>
+    <circle cx="120" cy="110" r="6"/>
   </g>
 
-  <ellipse class="blush" cx="125" cy="165" rx="15" ry="8" fill="#ff7aa2"/>
-  <ellipse class="blush" cx="195" cy="165" rx="15" ry="8" fill="#ff7aa2"/>
+  <ellipse class="blush" cx="70" cy="130" rx="12" ry="6" fill="#ff7aa2"/>
+  <ellipse class="blush" cx="130" cy="130" rx="12" ry="6" fill="#ff7aa2"/>
 
-  <polygon points="160,160 150,175 170,175" fill="#ff7aa2"/>
+  <polygon points="100,120 92,135 108,135" fill="#ff7aa2"/>
 </svg>
 
 <h1>nei jyun ji zou ngo ge Valentine maa?</h1>
 
+<div class="hoverHint">Hover over the cat to make it blush 😳</div>
+
 <section class="button-zone" id="zone">
-  <button id="yesBtn">Yes</button>
   <button id="noBtn">No</button>
+  <button id="yesBtn">Yes</button>
 </section>
 
-<div class="result cursorBlink" id="result"></div>
+<div class="shyHint" id="shyHint">“No” seems a bit shy 😛</div>
+
+<section class="result" id="result"></section>
 
 </main>
 
 <script>
-/* HEART TRAIL */
-document.addEventListener("mousemove", e=>{
-  const heart=document.createElement("div");
-  heart.className="heart";
-  heart.textContent="❤️";
-  heart.style.left=e.clientX+"px";
-  heart.style.top=e.clientY+"px";
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(),800);
-});
-
-/* CONFETTI */
-const canvas=document.getElementById("confettiCanvas");
-const confettiInstance=confetti.create(canvas,{resize:true,useWorker:true});
-function fullScreenConfetti(){
-  confettiInstance({
-    particleCount:300,
-    spread:140,
-    startVelocity:60,
-    origin:{x:0.5,y:0.55}
-  });
-}
-
-/* BUTTON LOGIC */
 const zone=document.getElementById("zone");
 const yesBtn=document.getElementById("yesBtn");
 const noBtn=document.getElementById("noBtn");
 const result=document.getElementById("result");
-const card=document.getElementById("card");
-const bgMusic=document.getElementById("bgMusic");
+const shyHint=document.getElementById("shyHint");
 
+/* YES grows */
 let yesScale=1;
 function growYes(){
-  yesScale=Math.min(2.5,yesScale+0.1);
+  yesScale=Math.min(2.2,yesScale+0.1);
   yesBtn.style.transform=`translateY(-50%) scale(${yesScale})`;
 }
 
+/* NO runs away */
 function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
+
 function moveNo(px,py){
   const z=zone.getBoundingClientRect();
   const b=noBtn.getBoundingClientRect();
+
   let dx=(b.left+b.width/2)-px;
   let dy=(b.top+b.height/2)-py;
   let mag=Math.hypot(dx,dy)||1;
   dx/=mag; dy/=mag;
-  let newLeft=(b.left-z.left)+dx*150;
-  let newTop=(b.top-z.top)+dy*150;
+
+  let newLeft=(b.left-z.left)+dx*120;
+  let newTop=(b.top-z.top)+dy*120;
+
   newLeft=clamp(newLeft,0,z.width-b.width);
   newTop=clamp(newTop,0,z.height-b.height);
+
   noBtn.style.left=newLeft+"px";
   noBtn.style.top=newTop+"px";
   noBtn.style.transform="none";
+
   growYes();
 }
 
@@ -276,23 +210,18 @@ zone.addEventListener("pointermove",e=>{
     (b.left+b.width/2)-e.clientX,
     (b.top+b.height/2)-e.clientY
   );
-  if(d<140) moveNo(e.clientX,e.clientY);
+  if(d<120) moveNo(e.clientX,e.clientY);
 });
 
-/* CINEMATIC YES */
+noBtn.addEventListener("click",e=>e.preventDefault());
+
+/* YES click */
 yesBtn.addEventListener("click",()=>{
   zone.style.display="none";
-
-  document.body.classList.add("dark");
-  card.classList.add("zoom");
-
-  fullScreenConfetti();
-  bgMusic.volume=0.4;
-  bgMusic.play();
-
+  shyHint.style.display="none";
   result.style.display="block";
 
-  const message =
+  result.textContent=
 `Valentine's Day plan:
 
 Dress: Sexy, but appropriate for dinner
@@ -302,17 +231,6 @@ Time: 7:30 PM
 Location: I am going to blindfold you so that you have no idea
 
 I can't wait for this day to come 😉`;
-
-  let i=0;
-  function typeWriter(){
-    if(i<message.length){
-      result.textContent+=message.charAt(i);
-      i++;
-      setTimeout(typeWriter,40);
-    }
-  }
-
-  setTimeout(typeWriter,800);
 });
 </script>
 
